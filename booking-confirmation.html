@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation - CourierX</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .success-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #4CAF50;
+        }
+
+        .success-header i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .booking-details {
+            margin-top: 2rem;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .detail-section {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .detail-section h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .detail-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-item label {
+            font-weight: 500;
+            color: #666;
+            display: inline-block;
+            width: 120px;
+        }
+
+        .tracking-id {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #e8f5e9;
+            border-radius: 5px;
+        }
+
+        .tracking-id h2 {
+            color: #2e7d32;
+            margin-bottom: 0.5rem;
+        }
+
+        .tracking-id p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: #1976d2;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-header">
+            <i class="fas fa-check-circle"></i>
+            <h1>Booking Confirmed!</h1>
+            <p>Your courier has been booked successfully</p>
+        </div>
+
+        <div class="tracking-id">
+            <h2>Tracking ID: <span id="trackingId">Loading...</span></h2>
+            <p>Use this ID to track your shipment status</p>
+        </div>
+
+        <div class="booking-details">
+            <div class="detail-grid">
+                <div class="detail-section">
+                    <h3>Sender Details</h3>
+                    <div class="detail-item">
+                        <label>Name:</label>
+                        <span id="senderName">Loading...</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Phone:</label>
+                        <span id="senderPhone">Loading...</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Address:</label>
+                        <span id="senderAddress">Loading...</span>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Receiver Details</h3>
+                    <div class="detail-item">
+                        <label>Name:</label>
+                        <span id="receiverName">Loading...</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Phone:</label>
+                        <span id="receiverPhone">Loading...</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Address:</label>
+                        <span id="receiverAddress">Loading...</span>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Package Details</h3>
+                    <div class="detail-item">
+                        <label>Type:</label>
+                        <span id="packageType">Loading...</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Weight:</label>
+                        <span id="weight">Loading...</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Amount:</label>
+                        <span id="amount">Loading...</span>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Payment Details</h3>
+                    <div class="detail-item">
+                        <label>Status:</label>
+                        <span id="paymentStatus">Loading...</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Method:</label>
+                        <span id="paymentMethod">Loading...</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Transaction ID:</label>
+                        <span id="transactionId">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons no-print">
+            <button class="btn btn-primary" onclick="window.location.href='track.html'">
+                <i class="fas fa-truck"></i> Track Package
+            </button>
+            <button class="btn btn-secondary" onclick="generateInvoice()">
+                <i class="fas fa-file-pdf"></i> Download Invoice
+            </button>
+        </div>
+    </div>
+
+    <!-- Load required scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="supabase.js"></script>
+    <script>
+        // Get booking ID from URL with validation
+        const urlParams = new URLSearchParams(window.location.search);
+        const bookingId = urlParams.get('id');
+
+        // Redirect to home if no booking ID
+        if (!bookingId) {
+            alert('No booking ID provided');
+            window.location.href = 'index.html';
+        }
+
+        // Load booking details
+        async function loadBookingDetails() {
+            try {
+                console.log('Loading booking details for ID:', bookingId);
+
+                const { data: booking, error: bookingError } = await supabase
+                    .from('bookings')
+                    .select('*')
+                    .eq('id', bookingId)
+                    .single();
+
+                if (bookingError) {
+                    console.error('Booking error:', bookingError);
+                    throw bookingError;
+                }
+
+                if (!booking) {
+                    throw new Error('Booking not found');
+                }
+
+                console.log('Booking data:', booking);
+
+                // Get payment details
+                const { data: payment, error: paymentError } = await supabase
+                    .from('payments')
+                    .select('*')
+                    .eq('booking_id', bookingId)
+                    .single();
+
+                if (paymentError) {
+                    console.error('Payment error:', paymentError);
+                    throw paymentError;
+                }
+
+                if (!payment) {
+                    throw new Error('Payment not found');
+                }
+
+                console.log('Payment data:', payment);
+
+                // Update UI with booking details
+                document.getElementById('trackingId').textContent = booking.tracking_id || 'N/A';
+                document.getElementById('senderName').textContent = booking.sender_name || 'N/A';
+                document.getElementById('senderPhone').textContent = booking.sender_phone || 'N/A';
+                document.getElementById('senderAddress').textContent = booking.sender_address || 'N/A';
+                document.getElementById('receiverName').textContent = booking.receiver_name || 'N/A';
+                document.getElementById('receiverPhone').textContent = booking.receiver_phone || 'N/A';
+                document.getElementById('receiverAddress').textContent = booking.receiver_address || 'N/A';
+                document.getElementById('packageType').textContent = booking.package_type || 'N/A';
+                document.getElementById('weight').textContent = booking.weight ? `${booking.weight} kg` : 'N/A';
+                document.getElementById('amount').textContent = booking.cost ? `₹${booking.cost.toFixed(2)}` : 'N/A';
+                document.getElementById('paymentStatus').textContent = payment.status || 'N/A';
+                document.getElementById('paymentMethod').textContent = payment.payment_method || 'N/A';
+                document.getElementById('transactionId').textContent = payment.transaction_id || 'N/A';
+
+            } catch (error) {
+                console.error('Error loading booking details:', error);
+                alert('Error loading booking details: ' + error.message);
+                // Redirect to home page on error
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Generate PDF invoice
+        async function generateInvoice() {
+            try {
+                // First check if jsPDF is properly loaded
+                if (typeof window.jspdf === 'undefined') {
+                    throw new Error('PDF generation library not loaded properly');
+                }
+
+                console.log('Generating invoice for booking ID:', bookingId);
+
+                const { data: booking, error: bookingError } = await supabase
+                    .from('bookings')
+                    .select('*')
+                    .eq('id', bookingId)
+                    .single();
+
+                if (bookingError) {
+                    console.error('Booking error:', bookingError);
+                    throw bookingError;
+                }
+
+                const { data: payment, error: paymentError } = await supabase
+                    .from('payments')
+                    .select('*')
+                    .eq('booking_id', bookingId)
+                    .single();
+
+                if (paymentError) {
+                    console.error('Payment error:', paymentError);
+                    throw paymentError;
+                }
+
+                // Check if we have all required data
+                if (!booking || !payment) {
+                    throw new Error('Required booking or payment data is missing');
+                }
+
+                console.log('Retrieved data for invoice:', { booking, payment });
+
+                // Initialize jsPDF with better error handling
+                let doc;
+                try {
+                    const { jsPDF } = window.jspdf;
+                    doc = new jsPDF();
+                } catch (pdfError) {
+                    console.error('PDF initialization error:', pdfError);
+                    throw new Error('Failed to initialize PDF generator');
+                }
+
+                // Add header with error handling
+                try {
+                    doc.setFontSize(20);
+                    doc.setTextColor(0, 51, 153);
+                    doc.text('CourierX', 105, 15, { align: 'center' });
+                    
+                    doc.setFontSize(12);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text('INVOICE', 105, 25, { align: 'center' });
+                    
+                    // Add invoice details
+                    doc.setFontSize(10);
+                    doc.text(`Invoice Date: ${new Date().toLocaleDateString('en-IN')}`, 15, 35);
+                    doc.text(`Invoice #: INV-${payment.id}`, 15, 42);
+                    doc.text(`Tracking ID: ${booking.tracking_id}`, 15, 49);
+
+                    // Add sender details
+                    doc.setFontSize(11);
+                    doc.setTextColor(0, 51, 153);
+                    doc.text('From:', 15, 60);
+                    doc.setTextColor(0, 0, 0);
+                    doc.setFontSize(10);
+                    doc.text([
+                        booking.sender_name || 'N/A',
+                        booking.sender_phone || 'N/A',
+                        booking.sender_address || 'N/A'
+                    ], 15, 67);
+
+                    // Add receiver details
+                    doc.setFontSize(11);
+                    doc.setTextColor(0, 51, 153);
+                    doc.text('To:', 105, 60);
+                    doc.setTextColor(0, 0, 0);
+                    doc.setFontSize(10);
+                    doc.text([
+                        booking.receiver_name || 'N/A',
+                        booking.receiver_phone || 'N/A',
+                        booking.receiver_address || 'N/A'
+                    ], 105, 67);
+
+                    // Add package details table
+                    const tableData = [
+                        ['Package Type', booking.package_type || 'N/A'],
+                        ['Weight', `${booking.weight || 0} kg`],
+                        ['Status', payment.status || 'N/A'],
+                        ['Payment Method', payment.payment_method || 'N/A'],
+                        ['Transaction ID', payment.transaction_id || 'N/A'],
+                        ['Amount', `₹${(booking.cost || 0).toFixed(2)}`]
+                    ];
+
+                    doc.autoTable({
+                        startY: 90,
+                        head: [['Description', 'Details']],
+                        body: tableData,
+                        theme: 'grid',
+                        headStyles: { fillColor: [0, 51, 153] }
+                    });
+
+                    // Add terms and conditions
+                    doc.setFontSize(9);
+                    doc.text([
+                        'Terms & Conditions:',
+                        '1. This is a computer generated invoice.',
+                        '2. Please retain this invoice for future reference.',
+                        '3. For any queries, please contact our customer support.'
+                    ], 15, doc.lastAutoTable.finalY + 20);
+
+                    // Add footer
+                    doc.setFontSize(8);
+                    doc.text('Thank you for choosing CourierX!', 105, 280, { align: 'center' });
+
+                    // Save the PDF
+                    doc.save(`CourierX_Invoice_${booking.tracking_id}.pdf`);
+
+                } catch (renderError) {
+                    console.error('PDF rendering error:', renderError);
+                    throw new Error('Failed to generate PDF content');
+                }
+
+            } catch (error) {
+                console.error('Error generating invoice:', error);
+                alert(`Error generating invoice: ${error.message}`);
+            }
+        }
+
+        // Load details when page loads
+        document.addEventListener('DOMContentLoaded', loadBookingDetails);
+    </script>
+</body>
+</html> 

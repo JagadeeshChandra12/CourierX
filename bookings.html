@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - CourierX</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="nav.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .bookings-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .bookings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .bookings-header h1 {
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .filter-select {
+            padding: 0.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 0.5rem 0.5rem 0.5rem 2rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            width: 200px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 0.7rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+        }
+
+        .bookings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .booking-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .booking-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .booking-id {
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .booking-date {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .booking-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: #fef9e7;
+            color: #f39c12;
+        }
+
+        .status-picked {
+            background-color: #e8f4fc;
+            color: #3498db;
+        }
+
+        .status-transit {
+            background-color: #eafaf1;
+            color: #27ae60;
+        }
+
+        .status-delivered {
+            background-color: #e8f6f3;
+            color: #16a085;
+        }
+
+        .status-cancelled {
+            background-color: #fdedec;
+            color: #e74c3c;
+        }
+
+        .booking-body {
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .booking-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .detail-group {
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-label {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .booking-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #bdc3c7;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .page-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .page-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .page-btn.active {
+            background-color: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .page-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 768px) {
+            .bookings-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .filter-controls {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .search-box {
+                flex-grow: 1;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+
+            .booking-body {
+                grid-template-columns: 1fr;
+            }
+
+            .booking-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-box"></i>
+                    <span>CourierX</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="book.html">Book Delivery</a>
+                <a href="track.html">Track Package</a>
+                <a href="contact.html">Contact</a>
+                <div class="nav-buttons" id="authButtons">
+                    <!-- This will be populated by JavaScript -->
+                </div>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Bookings Section -->
+    <section class="bookings-section">
+        <div class="container">
+            <div class="bookings-container">
+                <div class="bookings-header">
+                    <h1>My Bookings</h1>
+                    <div class="filter-controls">
+                        <select class="filter-select" id="statusFilter">
+                            <option value="">All Statuses</option>
+                            <option value="pending">Pending</option>
+                            <option value="picked">Picked Up</option>
+                            <option value="transit">In Transit</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="searchInput" placeholder="Search by ID or name...">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bookings-list" id="bookingsList">
+                    <!-- Bookings will be loaded here -->
+                    <div class="empty-state">
+                        <i class="fas fa-box-open"></i>
+                        <h3>No bookings found</h3>
+                        <p>You haven't made any bookings yet.</p>
+                        <a href="book.html" class="btn btn-primary" style="margin-top: 1rem;">
+                            <i class="fas fa-plus"></i> Book a Delivery
+                        </a>
+                    </div>
+                </div>
+
+                <div class="pagination" id="pagination">
+                    <!-- Pagination will be added here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2024 CourierX. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Add Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="nav.js"></script>
+
+    <script>
+        // Check authentication before allowing access
+        async function checkAuth() {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            if (!user) {
+                window.location.href = 'signin.html?redirect=bookings.html';
+                return null;
+            }
+            return user;
+        }
+
+        // Format date to readable format
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Get status class based on booking status
+        function getStatusClass(status) {
+            switch(status) {
+                case 'pending': return 'status-pending';
+                case 'picked': return 'status-picked';
+                case 'transit': return 'status-transit';
+                case 'delivered': return 'status-delivered';
+                case 'cancelled': return 'status-cancelled';
+                default: return 'status-pending';
+            }
+        }
+
+        // Get status text based on booking status
+        function getStatusText(status) {
+            switch(status) {
+                case 'pending': return 'Pending';
+                case 'picked': return 'Picked Up';
+                case 'transit': return 'In Transit';
+                case 'delivered': return 'Delivered';
+                case 'cancelled': return 'Cancelled';
+                default: return 'Pending';
+            }
+        }
+
+        // Create booking card HTML
+        function createBookingCard(booking) {
+            return `
+                <div class="booking-card">
+                    <div class="booking-header">
+                        <div class="booking-id">ID: ${booking.tracking_id}</div>
+                        <div class="booking-date">${formatDate(booking.created_at)}</div>
+                        <div class="booking-status ${getStatusClass(booking.status)}">${getStatusText(booking.status)}</div>
+                    </div>
+                    <div class="booking-body">
+                        <div class="booking-details">
+                            <div class="detail-group">
+                                <div class="detail-label">From</div>
+                                <div class="detail-value">${booking.sender_name}</div>
+                                <div class="detail-value" style="font-size: 0.9rem;">${booking.sender_address}</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">To</div>
+                                <div class="detail-value">${booking.receiver_name}</div>
+                                <div class="detail-value" style="font-size: 0.9rem;">${booking.receiver_address}</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Package</div>
+                                <div class="detail-value">${booking.package_type} (${booking.weight} kg)</div>
+                            </div>
+                            <div class="detail-group">
+                                <div class="detail-label">Amount</div>
+                                <div class="detail-value">₹${booking.amount}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="booking-actions">
+                        <a href="track.html?id=${booking.tracking_id}" class="btn btn-secondary">
+                            <i class="fas fa-search"></i> Track
+                        </a>
+                        <a href="confirmation.html?tracking_id=${booking.tracking_id}" class="btn btn-primary">
+                            <i class="fas fa-eye"></i> View Details
+                        </a>
+                        ${booking.status === 'pending' ? `
+                            <button class="btn btn-danger" onclick="cancelBooking('${booking.tracking_id}')">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Load user's bookings
+        async function loadBookings() {
+            try {
+                const user = await checkAuth();
+                if (!user) return;
+
+                // Get filter values
+                const statusFilter = document.getElementById('statusFilter').value;
+                const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+
+                // Build query
+                let query = supabase
+                    .from('bookings')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false });
+
+                // Apply status filter if selected
+                if (statusFilter) {
+                    query = query.eq('status', statusFilter);
+                }
+
+                // Execute query
+                const { data, error } = await query;
+                
+                if (error) throw error;
+
+                // Filter by search query if provided
+                let filteredBookings = data;
+                if (searchQuery) {
+                    filteredBookings = data.filter(booking => 
+                        booking.tracking_id.toLowerCase().includes(searchQuery) ||
+                        booking.sender_name.toLowerCase().includes(searchQuery) ||
+                        booking.receiver_name.toLowerCase().includes(searchQuery)
+                    );
+                }
+
+                // Display bookings
+                const bookingsList = document.getElementById('bookingsList');
+                
+                if (filteredBookings.length === 0) {
+                    bookingsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-box-open"></i>
+                            <h3>No bookings found</h3>
+                            <p>${searchQuery || statusFilter ? 'No bookings match your search criteria.' : 'You haven\'t made any bookings yet.'}</p>
+                            <a href="book.html" class="btn btn-primary" style="margin-top: 1rem;">
+                                <i class="fas fa-plus"></i> Book a Delivery
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    bookingsList.innerHTML = filteredBookings.map(booking => createBookingCard(booking)).join('');
+                }
+
+            } catch (error) {
+                console.error('Error loading bookings:', error);
+                alert('Error loading bookings. Please try again.');
+            }
+        }
+
+        // Cancel booking
+        async function cancelBooking(trackingId) {
+            if (!confirm('Are you sure you want to cancel this booking?')) {
+                return;
+            }
+
+            try {
+                const { error } = await supabase
+                    .from('bookings')
+                    .update({ status: 'cancelled' })
+                    .eq('tracking_id', trackingId);
+                
+                if (error) throw error;
+                
+                alert('Booking cancelled successfully.');
+                loadBookings();
+                
+            } catch (error) {
+                console.error('Error cancelling booking:', error);
+                alert('Error cancelling booking. Please try again.');
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBookings();
+            
+            // Add event listeners for filters
+            document.getElementById('statusFilter').addEventListener('change', loadBookings);
+            document.getElementById('searchInput').addEventListener('input', loadBookings);
+        });
+    </script>
+</body>
+</html> 

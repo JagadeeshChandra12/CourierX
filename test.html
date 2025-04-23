@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Data Storage - CourierX</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="nav.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .test-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .test-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .test-header h1 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .test-header p {
+            color: #7f8c8d;
+        }
+
+        .test-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        .test-results {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+        }
+
+        .test-results h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .result-item {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .result-label {
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-value {
+            background: #fff;
+            padding: 1rem;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-box"></i>
+                    <span>CourierX</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="book.html">Book Delivery</a>
+                <a href="track.html">Track Package</a>
+                <a href="contact.html">Contact</a>
+                <div class="nav-buttons" id="authButtons">
+                    <!-- This will be populated by JavaScript -->
+                </div>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Test Section -->
+    <section class="test-section">
+        <div class="container">
+            <div class="test-container">
+                <div class="test-header">
+                    <h1>Test Data Storage</h1>
+                    <p>Use this page to test the data storage functionality</p>
+                </div>
+
+                <div id="messageContainer"></div>
+
+                <div class="test-buttons">
+                    <button class="btn btn-primary" onclick="runTest()">
+                        <i class="fas fa-play"></i> Run Test
+                    </button>
+                    <button class="btn btn-secondary" onclick="checkStoredData()">
+                        <i class="fas fa-database"></i> Check Stored Data
+                    </button>
+                    </div>
+
+                <div class="test-results" id="testResults">
+                    <h3>Test Results</h3>
+                    <p>Click "Run Test" to create test data or "Check Stored Data" to view existing data.</p>
+                    </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2024 CourierX. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Add Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="nav.js"></script>
+
+    <script>
+        // Check authentication before allowing access
+        async function checkAuth() {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            if (!user) {
+                window.location.href = 'signin.html?redirect=test.html';
+                return null;
+            }
+            return user;
+        }
+
+        // Show message
+        function showMessage(message, isError = false) {
+            const messageContainer = document.getElementById('messageContainer');
+            messageContainer.innerHTML = `
+                <div class="${isError ? 'error-message' : 'success-message'}">
+                    <i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
+                    ${message}
+                </div>
+            `;
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                messageContainer.innerHTML = '';
+            }, 5000);
+        }
+
+        // Run test to create test data
+        async function runTest() {
+            try {
+                const user = await checkAuth();
+                if (!user) return;
+
+                // Generate a tracking ID
+                const trackingId = generateTrackingId();
+                
+                // Calculate cost based on weight (₹50 per kg)
+                const weight = 1.5;
+                const costPerKg = 50;
+                const totalCost = weight * costPerKg;
+                
+                // Create test booking data
+                const bookingData = {
+                    user_id: user.id,
+                    tracking_id: trackingId,
+                    sender_name: 'Test Sender',
+                    sender_phone: '1234567890',
+                    sender_address: '123 Test Street, Test City',
+                    sender_pincode: '123456',
+                    sender_city: 'Test City',
+                    receiver_name: 'Test Receiver',
+                    receiver_phone: '0987654321',
+                    receiver_address: '456 Test Avenue, Test Town',
+                    receiver_pincode: '654321',
+                    receiver_city: 'Test Town',
+                    package_type: 'Document',
+                    weight: weight,
+                    delivery_type: 'standard',
+                    insurance: true,
+                    amount: totalCost,
+                    payment_method: 'card',
+                    status: 'pending',
+                    delivery_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
+                    created_at: new Date().toISOString()
+                };
+                
+                // Create booking record
+                const { data: booking, error: bookingError } = await supabase
+                    .from('bookings')
+                    .insert([bookingData])
+                    .select();
+                
+                if (bookingError) throw bookingError;
+                
+                // Create tracking entry
+                const trackingData = {
+                    tracking_id: trackingId,
+                    status: 'Booked',
+                    location: 'Test Location',
+                    updated_at: new Date().toISOString()
+                };
+                
+                const { error: trackingError } = await supabase
+                    .from('tracking')
+                    .insert([trackingData]);
+                
+                if (trackingError) throw trackingError;
+                
+                // Create payment record
+                const paymentData = {
+                    booking_id: booking[0].id,
+                    user_id: user.id,
+                    tracking_id: trackingId,
+                    amount: totalCost,
+                    payment_method: 'card',
+                    payment_status: 'Pending',
+                    timestamp: new Date().toISOString()
+                };
+                
+                const { error: paymentError } = await supabase
+                    .from('payments')
+                    .insert([paymentData]);
+                
+                if (paymentError) throw paymentError;
+                
+                showMessage('Test data created successfully!');
+                checkStoredData();
+                
+            } catch (error) {
+                console.error('Error creating test data:', error);
+                showMessage('Error creating test data: ' + error.message, true);
+            }
+        }
+
+        // Check stored data
+        async function checkStoredData() {
+            try {
+                const user = await checkAuth();
+                if (!user) return;
+
+                // Get all bookings for the user
+                const { data: bookings, error: bookingsError } = await supabase
+                    .from('bookings')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false });
+                
+                if (bookingsError) throw bookingsError;
+                
+                // Display results
+                const testResults = document.getElementById('testResults');
+                
+                if (bookings.length === 0) {
+                    testResults.innerHTML = `
+                        <h3>Test Results</h3>
+                        <p>No bookings found. Click "Run Test" to create test data.</p>
+                    `;
+                    return;
+                }
+                
+                // Get the most recent booking
+                const latestBooking = bookings[0];
+                
+                // Get tracking data for the latest booking
+                const { data: tracking, error: trackingError } = await supabase
+                    .from('tracking')
+                    .select('*')
+                    .eq('tracking_id', latestBooking.tracking_id)
+                    .single();
+                
+                if (trackingError && trackingError.code !== 'PGRST116') throw trackingError;
+                
+                // Get payment data for the latest booking
+                const { data: payment, error: paymentError } = await supabase
+                    .from('payments')
+                    .select('*')
+                    .eq('tracking_id', latestBooking.tracking_id)
+                    .single();
+                
+                if (paymentError && paymentError.code !== 'PGRST116') throw paymentError;
+                
+                // Display results
+                testResults.innerHTML = `
+                    <h3>Test Results</h3>
+                    <div class="result-item">
+                        <div class="result-label">Latest Booking</div>
+                        <div class="result-value">${JSON.stringify(latestBooking, null, 2)}</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Tracking Data</div>
+                        <div class="result-value">${tracking ? JSON.stringify(tracking, null, 2) : 'No tracking data found'}</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Payment Data</div>
+                        <div class="result-value">${payment ? JSON.stringify(payment, null, 2) : 'No payment data found'}</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">All Bookings (${bookings.length})</div>
+                        <div class="result-value">${JSON.stringify(bookings, null, 2)}</div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Error checking stored data:', error);
+                showMessage('Error checking stored data: ' + error.message, true);
+            }
+        }
+
+        // Generate a random tracking ID
+        function generateTrackingId() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let trackingId = '';
+            for (let i = 0; i < 10; i++) {
+                trackingId += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return trackingId;
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+        });
+    </script>
+</body>
+</html>

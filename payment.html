@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - CourierX</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="nav.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .payment-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .amount-display {
+            text-align: center;
+            font-size: 2rem;
+            margin: 1.5rem 0;
+            color: #2c3e50;
+        }
+
+        .payment-options {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .payment-option {
+            display: block;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-option:hover {
+            border-color: #3498db;
+        }
+
+        .payment-option input[type="radio"] {
+            display: none;
+        }
+
+        .payment-option input[type="radio"]:checked + .option-content {
+            color: #2980b9;
+        }
+
+        .payment-option input[type="radio"]:checked + .option-content i {
+            color: #3498db;
+        }
+
+        .option-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .option-content i {
+            font-size: 1.5rem;
+            color: #7f8c8d;
+        }
+
+        .payment-forms > div {
+            display: none;
+        }
+
+        .payment-forms > div.active {
+            display: block;
+        }
+
+        .card-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .card-input-group {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .back-button {
+            background-color: #95a5a6;
+        }
+
+        .back-button:hover {
+            background-color: #7f8c8d;
+        }
+
+        .upi-section {
+            text-align: center;
+        }
+
+        .qr-code {
+            max-width: 200px;
+            margin: 1rem auto;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+
+        .upi-id {
+            font-family: monospace;
+            padding: 0.5rem;
+            background: #f7f9fa;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+
+        .cod-section {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .cod-icon {
+            font-size: 3rem;
+            color: #27ae60;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-box"></i>
+                    <span>CourierX</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="book.html">Book Delivery</a>
+                <a href="track.html">Track Package</a>
+                <a href="contact.html">Contact</a>
+                <div class="nav-buttons" id="authButtons">
+                    <!-- This will be populated by JavaScript -->
+                </div>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Payment Section -->
+    <section class="payment-section">
+        <div class="container">
+            <div class="payment-container">
+                <div class="payment-header">
+                <h2>Complete Your Payment</h2>
+                    <p>Please select your preferred payment method</p>
+            </div>
+
+                <div class="amount-display">
+                    Amount to Pay: <span id="paymentAmount">₹0</span>
+                </div>
+
+                <!-- Payment Options -->
+                <div class="payment-options">
+                    <label class="payment-option">
+                        <input type="radio" name="paymentMethod" value="card" checked onchange="showPaymentForm('card')">
+                        <div class="option-content">
+                            <i class="fas fa-credit-card"></i>
+                            <span>Credit/Debit Card</span>
+            </div>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="paymentMethod" value="upi" onchange="showPaymentForm('upi')">
+                        <div class="option-content">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>UPI Payment</span>
+                        </div>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="paymentMethod" value="cod" onchange="showPaymentForm('cod')">
+                        <div class="option-content">
+                            <i class="fas fa-money-bill-wave"></i>
+                            <span>Cash on Delivery</span>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Payment Forms -->
+                <div class="payment-forms">
+                    <!-- Card Payment Form -->
+                    <div id="cardForm" class="active">
+                        <div class="card-form">
+                            <div class="form-group">
+                                <label for="cardName">Cardholder Name</label>
+                                <input type="text" id="cardName" placeholder="As shown on card">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cardNumber">Card Number</label>
+                                <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456">
+                            </div>
+
+                            <div class="card-input-group">
+                                <div class="form-group">
+                                    <label for="expiryDate">Expiry Date</label>
+                                    <input type="text" id="expiryDate" placeholder="MM/YY">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cvv">CVV</label>
+                                    <input type="password" id="cvv" placeholder="123">
+                                </div>
+                            </div>
+
+                            <div class="button-group">
+                                <button type="button" class="btn back-button" onclick="goBack()">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="handleCardPayment()">
+                                    Pay Now <i class="fas fa-lock"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- UPI Payment Form -->
+                    <div id="upiForm" style="display: none;">
+                        <div class="upi-section">
+                            <div class="qr-code">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" 
+                                     alt="UPI QR Code" style="width: 100%; height: auto;">
+                            </div>
+                            <p>Scan QR code using any UPI app</p>
+                            <div class="upi-id">
+                                <span>UPI ID: courierx@upi</span>
+                            </div>
+                            <p>After payment, click the button below to confirm</p>
+                            <div class="button-group">
+                                <button type="button" class="btn back-button" onclick="goBack()">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="handleUPIPayment()">
+                                    Confirm Payment <i class="fas fa-check"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COD Form -->
+                    <div id="codForm" style="display: none;">
+                        <div class="cod-section">
+                            <i class="fas fa-money-bill-wave cod-icon"></i>
+                            <h3>Cash on Delivery</h3>
+                            <p>Pay ₹<span id="codAmount">0</span> in cash when your package arrives</p>
+                            <div class="button-group">
+                                <button type="button" class="btn back-button" onclick="goBack()">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="handleCODPayment()">
+                                    Confirm Order <i class="fas fa-check"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2024 CourierX. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Add Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="nav.js"></script>
+
+    <script>
+        // Check if user is logged in
+        async function checkAuth() {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            if (!user) {
+                window.location.href = 'signin.html?redirect=payment.html';
+                return null;
+            }
+            return user;
+        }
+
+        // Load booking details from localStorage
+        function loadBookingDetails() {
+            const bookingData = localStorage.getItem('currentBooking');
+            if (!bookingData) {
+                window.location.href = 'book.html';
+                return null;
+            }
+
+            try {
+                const booking = JSON.parse(bookingData);
+                if (!booking.totalCost) {
+                    console.error('Missing total cost in booking:', booking);
+                    window.location.href = 'book.html';
+                    return null;
+                }
+                
+                // Format and display the amount
+                const formattedAmount = parseFloat(booking.totalCost).toFixed(2);
+                document.getElementById('paymentAmount').textContent = `₹${formattedAmount}`;
+                document.getElementById('codAmount').textContent = formattedAmount;
+                
+                return booking;
+            } catch (error) {
+                console.error('Error loading booking details:', error);
+                window.location.href = 'book.html';
+                return null;
+            }
+        }
+
+        // Handle Card Payment
+        async function handleCardPayment() {
+            const cardName = document.getElementById('cardName').value.trim();
+            const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+            const expiryDate = document.getElementById('expiryDate').value.trim();
+            const cvv = document.getElementById('cvv').value.trim();
+
+            if (!cardName || !cardNumber || !expiryDate || !cvv) {
+                alert('Please fill in all card details');
+                return;
+            }
+
+            if (cardNumber.length < 16 || cardNumber.length > 19) {
+                alert('Invalid card number');
+                return;
+            }
+
+            if (!/^(0[1-9]|1[0-2])\/([0-9]{2})$/.test(expiryDate)) {
+                alert('Invalid expiry date (MM/YY)');
+                return;
+            }
+
+            if (cvv.length < 3 || cvv.length > 4) {
+                alert('Invalid CVV');
+                return;
+            }
+
+            await processPayment('card');
+        }
+
+        // Handle UPI Payment
+        async function handleUPIPayment() {
+            await processPayment('upi');
+        }
+
+        // Handle COD Payment
+        async function handleCODPayment() {
+            await processPayment('cod');
+        }
+
+        // Process payment
+        async function processPayment(paymentMethod) {
+            try {
+                // Show loading state
+                const button = document.querySelector(`#${paymentMethod}Form .btn-primary`);
+                const originalText = button.innerHTML;
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+                // Get authenticated user
+                const { data: { user }, error: authError } = await supabase.auth.getUser();
+                if (authError || !user) {
+                    throw new Error('Authentication failed. Please sign in again.');
+                }
+
+                // Load and validate booking details
+                const booking = loadBookingDetails();
+                if (!booking) {
+                    throw new Error('Invalid booking details');
+                }
+
+                // Generate tracking ID
+                const timestamp = new Date().getTime();
+                const random = Math.random().toString(36).substring(2, 5).toUpperCase();
+                const trackingId = `CX${timestamp.toString().slice(-8)}${random}`;
+
+                // Start transaction by inserting booking first
+                let bookingRecord;
+                try {
+                    const { data, error } = await supabase
+                        .from('bookings')
+                        .insert({
+                            user_id: user.id,
+                            tracking_id: trackingId,
+                            sender_name: booking.sender_name,
+                            sender_phone: booking.sender_phone,
+                            sender_address: booking.sender_address,
+                            sender_pincode: booking.sender_pincode,
+                            sender_city: booking.sender_city,
+                            sender_state: booking.sender_state,
+                            receiver_name: booking.receiver_name,
+                            receiver_phone: booking.receiver_phone,
+                            receiver_address: booking.receiver_address,
+                            receiver_pincode: booking.receiver_pincode,
+                            receiver_city: booking.receiver_city,
+                            receiver_state: booking.receiver_state,
+                            package_type: booking.package_type,
+                            weight: parseFloat(booking.weight),
+                            delivery_type: booking.delivery_type,
+                            insurance: booking.insurance === 'true' || booking.insurance === true,
+                            amount: parseFloat(booking.totalCost),
+                            payment_method: paymentMethod,
+                            status: paymentMethod === 'cod' ? 'pending_payment' : 'processing'
+                        })
+                        .select()
+                        .single();
+
+                    if (error) throw error;
+                    bookingRecord = data;
+                } catch (error) {
+                    console.error('Booking creation failed:', error);
+                    throw new Error('Failed to create booking. Please try again.');
+                }
+
+                // Create tracking entry
+                try {
+                    // First, log the tracking data we're trying to insert
+                    const trackingData = {
+                        booking_id: bookingRecord.id,
+                        status: 'Booked',
+                        location: booking.sender_city || 'Processing Center',
+                        description: paymentMethod === 'cod' ? 'Booking confirmed - Payment pending' : 'Booking confirmed'
+                    };
+                    console.log('Attempting to create tracking record:', trackingData);
+
+                    const { data, error } = await supabase
+                        .from('tracking')
+                        .insert([trackingData])
+                        .select();
+
+                    if (error) {
+                        console.error('Tracking error:', error);
+                        console.error('Error code:', error.code);
+                        console.error('Error message:', error.message);
+                        console.error('Error details:', error.details);
+                        throw error;
+                    }
+
+                    console.log('Tracking record created successfully:', data);
+
+                } catch (error) {
+                    console.error('Tracking creation failed:', error);
+                    // Try to rollback booking
+                    const { error: deleteError } = await supabase
+                        .from('bookings')
+                        .delete()
+                        .eq('id', bookingRecord.id);
+                    
+                    if (deleteError) {
+                        console.error('Failed to rollback booking:', deleteError);
+                    }
+                    throw new Error(`Failed to create tracking record: ${error.message}`);
+                }
+
+                // Create payment record
+                try {
+                    // Log payment data
+                    const paymentData = {
+                        booking_id: bookingRecord.id,
+                        user_id: user.id,
+                        amount: parseFloat(booking.totalCost),
+                        payment_method: paymentMethod,
+                        status: paymentMethod === 'cod' ? 'pending' : 'completed'
+                    };
+                    console.log('Attempting to create payment record:', paymentData);
+
+                    const { data, error } = await supabase
+                        .from('payments')
+                        .insert([paymentData])
+                        .select();
+
+                    if (error) {
+                        console.error('Payment error:', error);
+                        console.error('Error code:', error.code);
+                        console.error('Error message:', error.message);
+                        console.error('Error details:', error.details);
+                        throw error;
+                    }
+
+                    console.log('Payment record created successfully:', data);
+
+                } catch (error) {
+                    console.error('Payment creation failed:', error);
+                    // Try to rollback booking and tracking
+                    await supabase.from('tracking').delete().eq('booking_id', bookingRecord.id);
+                    await supabase.from('bookings').delete().eq('id', bookingRecord.id);
+                    throw new Error(`Failed to create payment record: ${error.message}`);
+                }
+
+                // Success! Clear booking details and redirect
+                localStorage.removeItem('currentBooking');
+                localStorage.setItem('last_tracking_id', trackingId);
+                window.location.href = `booking-confirmation.html?id=${bookingRecord.id}`;
+
+            } catch (error) {
+                console.error('Payment processing error:', error);
+                // Show error message to user
+                const errorMessage = error.message || 'There was an error processing your payment. Please try again.';
+                alert(errorMessage);
+            } finally {
+                // Reset button state
+                const button = document.querySelector(`#${paymentMethod}Form .btn-primary`);
+                if (button) {
+                    button.disabled = false;
+                    button.innerHTML = paymentMethod === 'card' ? 'Pay Now <i class="fas fa-lock"></i>' :
+                                     paymentMethod === 'upi' ? 'Confirm Payment <i class="fas fa-check"></i>' :
+                                     'Confirm Order <i class="fas fa-check"></i>';
+                }
+            }
+        }
+
+        // Show selected payment form
+        function showPaymentForm(method) {
+            // Hide all forms
+            document.querySelectorAll('.payment-forms > div').forEach(form => {
+                form.style.display = 'none';
+            });
+
+            // Show selected form
+            document.getElementById(`${method}Form`).style.display = 'block';
+        }
+
+        // Go back to booking page step 3
+        function goBack() {
+            // Save current payment method selection if any
+            const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked');
+            if (selectedPayment) {
+                const currentBooking = JSON.parse(localStorage.getItem('currentBooking') || '{}');
+                currentBooking.payment_method = selectedPayment.value;
+                localStorage.setItem('currentBooking', JSON.stringify(currentBooking));
+            }
+            
+            // Redirect back to step 3 of booking form
+            window.location.href = 'book.html#step3';
+            
+            // Use setTimeout to ensure the hash change is processed
+            setTimeout(() => {
+                window.location.reload();
+            }, 100);
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Check authentication first
+                const { data: { user }, error: authError } = await supabase.auth.getUser();
+                if (authError || !user) {
+                    window.location.href = 'signin.html?redirect=payment.html';
+                    return;
+                }
+
+                // Load and validate booking details
+                const booking = loadBookingDetails();
+                if (!booking) {
+                    return; // loadBookingDetails will handle redirection
+                }
+
+                // Set initial payment method if saved
+                if (booking.payment_method) {
+                    const radio = document.querySelector(`input[name="paymentMethod"][value="${booking.payment_method}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                        showPaymentForm(booking.payment_method);
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error initializing payment page:', error);
+                alert('Error loading payment details. Please try again.');
+                window.location.href = 'book.html';
+            }
+        });
+
+        // Add input formatting for card details
+        document.getElementById('cardNumber').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            value = value.replace(/(\d{4})/g, '$1 ').trim();
+            e.target.value = value.substring(0, 19);
+        });
+
+        document.getElementById('expiryDate').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2);
+            }
+            e.target.value = value.substring(0, 5);
+        });
+
+        document.getElementById('cvv').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '').substring(0, 4);
+        });
+    </script>
+</body>
+</html>

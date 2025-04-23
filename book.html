@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Delivery - CourierX</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="nav.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-box"></i>
+                    <span>CourierX</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="book.html" class="active">Book Delivery</a>
+                <a href="track.html">Track Package</a>
+                <a href="contact.html">Contact</a>
+                <div class="nav-buttons" id="authButtons">
+                    <!-- This will be populated by JavaScript -->
+                </div>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Book Delivery Section -->
+    <section class="book-delivery">
+        <div class="container">
+            <div class="section-header">
+                <h2>Book a Delivery</h2>
+                <p>Schedule your delivery with our easy-to-use booking system</p>
+            </div>
+            <div class="booking-form">
+                <!-- Progress Indicator -->
+                <div class="form-progress">
+                    <div class="progress-step active" id="step1-indicator">1</div>
+                    <div class="progress-step" id="step2-indicator">2</div>
+                    <div class="progress-step" id="step3-indicator">3</div>
+                </div>
+
+                <form id="bookingForm" onsubmit="return handleBookingSubmit(event)">
+                    <!-- Step 1: Sender & Receiver Details -->
+                    <div class="form-step" id="step1">
+                        <h3>Sender Details</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="senderName">Full Name*</label>
+                                <input type="text" id="senderName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="senderPhone">Phone Number*</label>
+                                <input type="tel" id="senderPhone" pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="senderAddress1">Address Line 1*</label>
+                                <input type="text" id="senderAddress1" placeholder="House No, Street Name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="senderAddress2">Address Line 2 (Optional)</label>
+                                <input type="text" id="senderAddress2" placeholder="Landmark">
+                            </div>
+                            <div class="form-group">
+                                <label for="senderPincode">Pincode*</label>
+                                <input type="text" id="senderPincode" pattern="[0-9]{6}" title="Please enter a valid 6-digit pincode" required onchange="fetchLocationDetails('sender')">
+                            </div>
+                            <div class="form-group">
+                                <label for="senderCity">City*</label>
+                                <input type="text" id="senderCity" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="senderState">State*</label>
+                                <input type="text" id="senderState" required>
+                            </div>
+                        </div>
+
+                        <h3>Receiver Details</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="receiverName">Full Name*</label>
+                                <input type="text" id="receiverName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="receiverPhone">Phone Number*</label>
+                                <input type="tel" id="receiverPhone" pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="receiverAddress1">Address Line 1*</label>
+                                <input type="text" id="receiverAddress1" placeholder="House No, Street Name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="receiverAddress2">Address Line 2 (Optional)</label>
+                                <input type="text" id="receiverAddress2" placeholder="Landmark">
+                            </div>
+                            <div class="form-group">
+                                <label for="receiverPincode">Pincode*</label>
+                                <input type="text" id="receiverPincode" pattern="[0-9]{6}" title="Please enter a valid 6-digit pincode" required onchange="fetchLocationDetails('receiver')">
+                            </div>
+                            <div class="form-group">
+                                <label for="receiverCity">City*</label>
+                                <input type="text" id="receiverCity" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="receiverState">State*</label>
+                                <input type="text" id="receiverState" required>
+                            </div>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="button" class="btn btn-primary" onclick="nextStep(1)">Next <i class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Package Details -->
+                    <div class="form-step" id="step2" style="display: none;">
+                        <h3>Package Details</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="packageType">Package Type*</label>
+                                <select id="packageType" required>
+                                    <option value="">Select package type</option>
+                                    <option value="documents">Documents</option>
+                                    <option value="parcel">Parcel</option>
+                                    <option value="fragile">Fragile</option>
+                                    <option value="electronics">Electronics</option>
+                                    <option value="food">Food Items</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="weight">Weight (kg)*</label>
+                                <input type="number" id="weight" min="0.1" step="0.1" required onchange="updateCostSummary()">
+                            </div>
+                            <div class="form-group">
+                                <label for="length">Length (cm)</label>
+                                <input type="number" id="length" min="1" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="width">Width (cm)</label>
+                                <input type="number" id="width" min="1" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label for="height">Height (cm)</label>
+                                <input type="number" id="height" min="1" step="0.1">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="specialInstructions">Special Instructions</label>
+                                <textarea id="specialInstructions" rows="3" placeholder="Any special handling instructions..."></textarea>
+                            </div>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="button" class="btn btn-secondary" onclick="prevStep(2)"><i class="fas fa-arrow-left"></i> Previous</button>
+                            <button type="button" class="btn btn-primary" onclick="nextStep(2)">Next <i class="fas fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Delivery & Payment -->
+                    <div class="form-step" id="step3" style="display: none;">
+                        <h3>Delivery Options</h3>
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <div class="delivery-options">
+                                    <label class="delivery-option">
+                                        <input type="radio" name="deliveryType" value="standard" required checked onchange="updateCostSummary()">
+                                        <div class="option-content">
+                                            <div class="option-header">
+                                                <h4>Standard Delivery</h4>
+                                                <span class="delivery-time">2-3 Business Days</span>
+                                            </div>
+                                            <span class="delivery-price">₹0</span>
+                                        </div>
+                                    </label>
+                                    <label class="delivery-option">
+                                        <input type="radio" name="deliveryType" value="express" required onchange="updateCostSummary()">
+                                        <div class="option-content">
+                                            <div class="option-header">
+                                                <h4>Express Delivery</h4>
+                                                <span class="delivery-time">Next Day Delivery</span>
+                                            </div>
+                                            <span class="delivery-price">₹99</span>
+                                        </div>
+                                    </label>
+                                    <label class="delivery-option">
+                                        <input type="radio" name="deliveryType" value="sameday" required onchange="updateCostSummary()">
+                                        <div class="option-content">
+                                            <div class="option-header">
+                                                <h4>Same-day Delivery</h4>
+                                                <span class="delivery-time">Delivery within 12 hours</span>
+                                            </div>
+                                            <span class="delivery-price">₹299</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group full-width" style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" id="insurance" onchange="updateCostSummary()">
+                                <label for="insurance" style="margin: 0; cursor: pointer;">Add Insurance (₹199)</label>
+                            </div>
+                        </div>
+
+                        <div class="cost-summary">
+                            <h3>Cost Summary</h3>
+                            <div class="summary-items">
+                                <div class="summary-item">
+                                    <span>Base Charge</span>
+                                    <span id="baseCharge">₹0</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span>Weight Charge</span>
+                                    <span id="weightCharge">₹0</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span>Distance Charge</span>
+                                    <span id="distanceCharge">₹0</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span>Delivery Charge</span>
+                                    <span id="deliveryCharge">₹0</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span>Insurance Charge</span>
+                                    <span id="insuranceCharge">₹0</span>
+                                </div>
+                                <div class="summary-item total">
+                                    <span>Total Amount</span>
+                                    <span id="totalAmount">₹199</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-buttons">
+                            <button type="button" class="btn btn-secondary" onclick="prevStep(3)"><i class="fas fa-arrow-left"></i> Previous</button>
+                            <button type="button" class="btn btn-primary" onclick="redirectToPayment()">Proceed to Payment <i class="fas fa-check"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <a href="index.html">
+                            <i class="fas fa-box"></i>
+                            <span>CourierX</span>
+                        </a>
+                    </div>
+                    <p>Delivering your packages safely and on time, every time. Your trusted partner in logistics and delivery solutions.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="track.html">Track Package</a></li>
+                        <li><a href="book.html">Book Delivery</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Our Services</h3>
+                    <ul>
+                        <li><a href="services.html#express">Express Delivery</a></li>
+                        <li><a href="services.html#international">International Shipping</a></li>
+                        <li><a href="services.html#warehousing">Warehousing</a></li>
+                        <li><a href="services.html#customs">Customs Clearance</a></li>
+                        <li><a href="services.html#insurance">Insurance Services</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> 1234 Delivery Street, Courier City, CC 12345</li>
+                        <li><i class="fas fa-phone"></i> (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@courierx.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 CourierX. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Add Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="nav.js"></script>
+
+    <script>
+        // Check if user is logged in
+        async function checkAuth() {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            if (!user) {
+                window.location.href = 'signin.html?redirect=book.html';
+                return null;
+            }
+            return user;
+        }
+
+        // Load user profile data
+        async function loadProfileData() {
+            try {
+                const user = await checkAuth();
+                if (!user) return;
+
+                const { data: profile, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
+
+                if (error) throw error;
+
+                if (profile) {
+                    // Pre-fill sender details with profile data
+                    document.getElementById('senderName').value = profile.full_name || '';
+                    document.getElementById('senderPhone').value = profile.phone || '';
+                    document.getElementById('senderAddress').value = profile.address || '';
+                    document.getElementById('senderPincode').value = profile.pincode || '';
+                    document.getElementById('senderCity').value = profile.city || '';
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+
+        // Function to update cost summary
+        function updateCostSummary() {
+            const weight = parseFloat(document.getElementById('weight').value) || 0;
+            const deliveryType = document.querySelector('input[name="deliveryType"]:checked').value;
+            const insurance = document.getElementById('insurance').checked;
+            
+            // Calculate base charge
+            const baseCharge = 50;
+            document.getElementById('baseCharge').textContent = `₹${baseCharge}`;
+            
+            // Calculate weight charge (₹50 per kg)
+            const weightCharge = weight * 50;
+            document.getElementById('weightCharge').textContent = `₹${weightCharge}`;
+            
+            // Calculate delivery charge based on type
+            let deliveryCharge = 0;
+            switch(deliveryType) {
+                case 'express':
+                    deliveryCharge = 99;
+                    break;
+                case 'sameday':
+                    deliveryCharge = 299;
+                    break;
+                default: // standard
+                    deliveryCharge = 0;
+            }
+            document.getElementById('deliveryCharge').textContent = `₹${deliveryCharge}`;
+            
+            // Calculate insurance charge
+            const insuranceCharge = insurance ? 199 : 0;
+            document.getElementById('insuranceCharge').textContent = `₹${insuranceCharge}`;
+            
+            // Calculate total
+            const total = baseCharge + weightCharge + deliveryCharge + insuranceCharge;
+            document.getElementById('totalAmount').textContent = `₹${total}`;
+            
+            return total;
+        }
+
+        // Handle form submission
+        async function handleBookingSubmit(event) {
+            event.preventDefault();
+            
+            try {
+                const user = await checkAuth();
+                if (!user) return;
+                
+                // Get form values
+                const senderName = document.getElementById('senderName').value;
+                const senderPhone = document.getElementById('senderPhone').value;
+                const senderAddress = document.getElementById('senderAddress').value;
+                const senderPincode = document.getElementById('senderPincode').value;
+                const senderCity = document.getElementById('senderCity').value;
+                
+                const receiverName = document.getElementById('receiverName').value;
+                const receiverPhone = document.getElementById('receiverPhone').value;
+                const receiverAddress = document.getElementById('receiverAddress').value;
+                const receiverPincode = document.getElementById('receiverPincode').value;
+                const receiverCity = document.getElementById('receiverCity').value;
+                
+                const packageType = document.getElementById('packageType').value;
+                const weight = parseFloat(document.getElementById('weight').value);
+                const deliveryType = document.getElementById('deliveryType').value;
+                const insurance = document.getElementById('insurance').checked;
+                const deliveryDate = document.getElementById('deliveryDate').value;
+                
+                // Calculate cost
+                const costPerKg = 50; // ₹50 per kg
+                const insuranceCost = insurance ? 100 : 0; // ₹100 for insurance
+                const expressMultiplier = deliveryType === 'express' ? 2 : 1;
+                const totalCost = (weight * costPerKg * expressMultiplier) + insuranceCost;
+                
+                // Generate tracking ID
+                const trackingId = generateTrackingId();
+                
+                // Create booking data
+                const bookingData = {
+                    user_id: user.id,
+                    tracking_id: trackingId,
+                    sender_name: senderName,
+                    sender_phone: senderPhone,
+                    sender_address: senderAddress,
+                    sender_pincode: senderPincode,
+                    sender_city: senderCity,
+                    receiver_name: receiverName,
+                    receiver_phone: receiverPhone,
+                    receiver_address: receiverAddress,
+                    receiver_pincode: receiverPincode,
+                    receiver_city: receiverCity,
+                    package_type: packageType,
+                    weight: weight,
+                    delivery_type: deliveryType,
+                    insurance: insurance,
+                    amount: totalCost,
+                    payment_method: 'pending',
+                    status: 'pending',
+                    delivery_date: new Date(deliveryDate).toISOString(),
+                    created_at: new Date().toISOString()
+                };
+                
+                // Store booking data in localStorage for payment page
+                localStorage.setItem('currentBooking', JSON.stringify(bookingData));
+                
+                // Redirect to payment page
+                window.location.href = 'payment.html';
+                
+            } catch (error) {
+                console.error('Error submitting booking:', error);
+                alert('Error submitting booking: ' + error.message);
+            }
+        }
+
+        // Generate a random tracking ID
+        function generateTrackingId() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let trackingId = '';
+            for (let i = 0; i < 10; i++) {
+                trackingId += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return trackingId;
+        }
+
+        // Function to redirect to payment page
+        function redirectToPayment() {
+            // Validate the form first
+            if (!validateStep(3)) return;
+            
+            // Get form values
+            const senderName = document.getElementById('senderName').value;
+            const senderPhone = document.getElementById('senderPhone').value;
+            const senderAddress1 = document.getElementById('senderAddress1').value;
+            const senderAddress2 = document.getElementById('senderAddress2').value || '';
+            const senderAddress = senderAddress1 + (senderAddress2 ? ', ' + senderAddress2 : '');
+            const senderPincode = document.getElementById('senderPincode').value;
+            const senderCity = document.getElementById('senderCity').value;
+            const senderState = document.getElementById('senderState').value;
+            
+            const receiverName = document.getElementById('receiverName').value;
+            const receiverPhone = document.getElementById('receiverPhone').value;
+            const receiverAddress1 = document.getElementById('receiverAddress1').value;
+            const receiverAddress2 = document.getElementById('receiverAddress2').value || '';
+            const receiverAddress = receiverAddress1 + (receiverAddress2 ? ', ' + receiverAddress2 : '');
+            const receiverPincode = document.getElementById('receiverPincode').value;
+            const receiverCity = document.getElementById('receiverCity').value;
+            const receiverState = document.getElementById('receiverState').value;
+            
+            const packageType = document.getElementById('packageType').value;
+            const weight = parseFloat(document.getElementById('weight').value);
+            const deliveryType = document.querySelector('input[name="deliveryType"]:checked').value;
+            const insurance = document.getElementById('insurance').checked;
+            
+            // Get the total cost from the cost summary
+            const totalCost = parseFloat(document.getElementById('totalAmount').textContent.replace('₹', ''));
+            
+            // Create booking data
+            const bookingData = {
+                sender_name: senderName,
+                sender_phone: senderPhone,
+                sender_address: senderAddress,
+                sender_pincode: senderPincode,
+                sender_city: senderCity,
+                sender_state: senderState,
+                receiver_name: receiverName,
+                receiver_phone: receiverPhone,
+                receiver_address: receiverAddress,
+                receiver_pincode: receiverPincode,
+                receiver_city: receiverCity,
+                receiver_state: receiverState,
+                package_type: packageType,
+                weight: weight,
+                delivery_type: deliveryType,
+                insurance: insurance,
+                totalCost: totalCost,
+                payment_method: 'pending',
+                status: 'pending'
+            };
+            
+            // Store booking data in localStorage for payment page
+            localStorage.setItem('currentBooking', JSON.stringify(bookingData));
+            
+            // Redirect to payment page
+            window.location.href = 'payment.html';
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProfileData();
+            
+            // Add event listeners for cost calculation
+            document.getElementById('weight').addEventListener('input', updateCostSummary);
+            document.querySelectorAll('input[name="deliveryType"]').forEach(radio => {
+                radio.addEventListener('change', updateCostSummary);
+            });
+            document.getElementById('insurance').addEventListener('change', updateCostSummary);
+            
+            // Set min date for delivery date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('deliveryDate').min = today;
+            
+            // Initial cost calculation
+            updateCostSummary();
+
+            // Check if returning from payment page
+            if (window.location.hash === '#step3') {
+                // Hide step 1 and show step 3
+                document.getElementById('step1').style.display = 'none';
+                document.getElementById('step3').style.display = 'block';
+                
+                // Update progress indicators
+                document.getElementById('step1-indicator').classList.remove('active');
+                document.getElementById('step1-indicator').classList.add('completed');
+                document.getElementById('step2-indicator').classList.add('completed');
+                document.getElementById('step3-indicator').classList.add('active');
+
+                // Restore form data if available
+                const savedBooking = localStorage.getItem('currentBooking');
+                if (savedBooking) {
+                    const bookingData = JSON.parse(savedBooking);
+                    // Restore delivery type selection
+                    const deliveryTypeRadio = document.querySelector(`input[name="deliveryType"][value="${bookingData.delivery_type}"]`);
+                    if (deliveryTypeRadio) {
+                        deliveryTypeRadio.checked = true;
+                    }
+                    // Restore insurance selection
+                    document.getElementById('insurance').checked = bookingData.insurance;
+                    // Update cost summary
+                    updateCostSummary();
+                }
+            }
+        });
+
+        // Function to handle next step
+        function nextStep(step) {
+            // Validate current step
+            if (!validateStep(step)) return;
+            
+            // Hide current step
+            document.getElementById(`step${step}`).style.display = 'none';
+            // Show next step
+            document.getElementById(`step${step + 1}`).style.display = 'block';
+            // Update progress indicator
+            document.getElementById(`step${step}-indicator`).classList.remove('active');
+            document.getElementById(`step${step}-indicator`).classList.add('completed');
+            document.getElementById(`step${step + 1}-indicator`).classList.add('active');
+            
+            // Scroll to top of form
+            document.querySelector('.booking-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Function to handle previous step
+        function prevStep(step) {
+            // Hide current step
+            document.getElementById(`step${step}`).style.display = 'none';
+            // Show previous step
+            document.getElementById(`step${step - 1}`).style.display = 'block';
+            // Update progress indicator
+            document.getElementById(`step${step}-indicator`).classList.remove('active');
+            document.getElementById(`step${step - 1}-indicator`).classList.remove('completed');
+            document.getElementById(`step${step - 1}-indicator`).classList.add('active');
+            
+            // Scroll to top of form
+            document.querySelector('.booking-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Function to validate each step
+        function validateStep(step) {
+            const currentStep = document.getElementById(`step${step}`);
+            let isValid = true;
+            
+            // Get all required inputs in current step
+            const requiredInputs = currentStep.querySelectorAll('input[required], select[required]');
+            
+            // Check each required input
+            requiredInputs.forEach(input => {
+                if (!input.value.trim()) {
+                    isValid = false;
+                    input.classList.add('error');
+                    // Add error message below the input
+                    let errorMsg = input.nextElementSibling;
+                    if (!errorMsg || !errorMsg.classList.contains('error-message')) {
+                        errorMsg = document.createElement('div');
+                        errorMsg.className = 'error-message';
+                        input.parentNode.insertBefore(errorMsg, input.nextSibling);
+                    }
+                    errorMsg.textContent = `Please enter ${input.previousElementSibling.textContent.replace('*', '')}`;
+                } else {
+                    input.classList.remove('error');
+                    // Remove error message if it exists
+                    const errorMsg = input.nextElementSibling;
+                    if (errorMsg && errorMsg.classList.contains('error-message')) {
+                        errorMsg.remove();
+                    }
+                }
+            });
+
+            // Additional validation for phone numbers
+            if (step === 1) {
+                const phoneInputs = [
+                    document.getElementById('senderPhone'),
+                    document.getElementById('receiverPhone')
+                ];
+                
+                phoneInputs.forEach(input => {
+                    if (input.value && !input.value.match(/^[0-9]{10}$/)) {
+                        isValid = false;
+                        input.classList.add('error');
+                        let errorMsg = input.nextElementSibling;
+                        if (!errorMsg || !errorMsg.classList.contains('error-message')) {
+                            errorMsg = document.createElement('div');
+                            errorMsg.className = 'error-message';
+                            input.parentNode.insertBefore(errorMsg, input.nextSibling);
+                        }
+                        errorMsg.textContent = 'Please enter a valid 10-digit phone number';
+                    }
+                });
+
+                // Validate pincodes
+                const pincodeInputs = [
+                    document.getElementById('senderPincode'),
+                    document.getElementById('receiverPincode')
+                ];
+                
+                pincodeInputs.forEach(input => {
+                    if (input.value && !input.value.match(/^[0-9]{6}$/)) {
+                        isValid = false;
+                        input.classList.add('error');
+                        let errorMsg = input.nextElementSibling;
+                        if (!errorMsg || !errorMsg.classList.contains('error-message')) {
+                            errorMsg = document.createElement('div');
+                            errorMsg.className = 'error-message';
+                            input.parentNode.insertBefore(errorMsg, input.nextSibling);
+                        }
+                        errorMsg.textContent = 'Please enter a valid 6-digit pincode';
+                    }
+                });
+            }
+
+            // Additional validation for step 2
+            if (step === 2) {
+                const weight = parseFloat(document.getElementById('weight').value);
+                if (weight <= 0) {
+                    isValid = false;
+                    const weightInput = document.getElementById('weight');
+                    weightInput.classList.add('error');
+                    let errorMsg = weightInput.nextElementSibling;
+                    if (!errorMsg || !errorMsg.classList.contains('error-message')) {
+                        errorMsg = document.createElement('div');
+                        errorMsg.className = 'error-message';
+                        weightInput.parentNode.insertBefore(errorMsg, weightInput.nextSibling);
+                    }
+                    errorMsg.textContent = 'Please enter a valid weight greater than 0';
+                }
+            }
+
+            if (!isValid) {
+                // Show general error message at top of form
+                const formError = document.createElement('div');
+                formError.className = 'form-error';
+                formError.textContent = 'Please fill in all required fields correctly';
+                currentStep.insertBefore(formError, currentStep.firstChild);
+                
+                // Remove error message after 3 seconds
+                setTimeout(() => {
+                    if (formError.parentNode) {
+                        formError.remove();
+                    }
+                }, 3000);
+            }
+
+            return isValid;
+        }
+    </script>
+</body>
+</html>

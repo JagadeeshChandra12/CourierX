@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - CourierX</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+        }
+
+        .profile-avatar i {
+            font-size: 40px;
+            color: white;
+        }
+
+        .profile-info h1 {
+            margin: 0;
+            color: #1f2937;
+        }
+
+        .profile-info p {
+            margin: 5px 0;
+            color: #6b7280;
+        }
+
+        .profile-sections {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .profile-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .profile-section h2 {
+            margin-top: 0;
+            color: #1f2937;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #4b5563;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .activity-info {
+            flex: 1;
+        }
+
+        .activity-info h4 {
+            margin: 0;
+            color: #1f2937;
+        }
+
+        .activity-info p {
+            margin: 5px 0 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .activity-date {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* Add styles for bookings section */
+        .booking-item {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s;
+        }
+
+        .booking-item:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .booking-id {
+            font-weight: 500;
+            color: #2563eb;
+        }
+
+        .booking-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-in-transit {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-delivered {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .booking-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .booking-detail {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        .booking-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .btn-track {
+            background: #2563eb;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-track:hover {
+            background: #1d4ed8;
+        }
+
+        .no-bookings {
+            text-align: center;
+            padding: 40px 20px;
+            background: #f9fafb;
+            border-radius: 8px;
+            border: 2px dashed #e5e7eb;
+        }
+
+        .no-bookings i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #d1d5db;
+        }
+
+        .no-bookings p {
+            color: #6b7280;
+            margin-bottom: 16px;
+        }
+
+        .no-bookings .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #2563eb;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .no-bookings .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .booking-date {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-box"></i>
+                CourierX
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="services.html">Services</a>
+                <a href="tracking.html">Tracking</a>
+                <a href="contact.html">Contact</a>
+                <a href="profile.html" class="active">Profile</a>
+                <button onclick="handleSignOut()" class="btn btn-secondary">Sign Out</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="profile-info">
+                <h1 id="userName">Loading...</h1>
+                <p id="userEmail">Loading...</p>
+            </div>
+        </div>
+
+        <div class="profile-sections">
+            <div class="profile-section">
+                <h2>Personal Information</h2>
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" name="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Default Address</label>
+                        <input type="text" id="address" name="address">
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="profile-section">
+                <h2>Recent Activity</h2>
+                <div id="recentActivity">
+                    <!-- Activity items will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h2>My Bookings</h2>
+                <div id="bookingsList">
+                    <!-- Bookings will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="tracking.html">Tracking</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> 1234 Delivery Street, Courier City, CC 12345</li>
+                        <li><i class="fas fa-phone"></i> (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@courierx.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 CourierX. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Add Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script>
+        // Check if user is logged in
+        async function checkAuth() {
+            const { data: { user }, error } = await supabase.auth.getUser();
+            if (error || !user) {
+                window.location.href = 'signin.html';
+                return;
+            }
+            return user;
+        }
+
+        // Load user profile
+        async function loadProfile() {
+            const user = await checkAuth();
+            if (!user) return;
+
+            // Get profile data
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user.id)
+                .single();
+
+            if (error) {
+                console.error('Error loading profile:', error);
+                return;
+            }
+
+            // Update UI
+            document.getElementById('userName').textContent = profile.full_name || 'No Name Set';
+            document.getElementById('userEmail').textContent = user.email;
+            document.getElementById('fullName').value = profile.full_name || '';
+            document.getElementById('phone').value = profile.phone || '';
+            document.getElementById('address').value = profile.address || '';
+
+            // Load recent activity
+            loadRecentActivity(user.id);
+        }
+
+        // Load recent activity
+        async function loadRecentActivity(userId) {
+            const { data: bookings, error } = await supabase
+                .from('bookings')
+                .select('*')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false })
+                .limit(5);
+
+            if (error) {
+                console.error('Error loading activity:', error);
+                return;
+            }
+
+            const activityContainer = document.getElementById('recentActivity');
+            activityContainer.innerHTML = '';
+
+            if (bookings.length === 0) {
+                activityContainer.innerHTML = '<p>No recent activity</p>';
+                return;
+            }
+
+            bookings.forEach(booking => {
+                const date = new Date(booking.created_at).toLocaleDateString();
+                activityContainer.innerHTML += `
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="activity-info">
+                            <h4>Booking #${booking.booking_id}</h4>
+                            <p>From ${booking.sender_city} to ${booking.receiver_city}</p>
+                        </div>
+                        <div class="activity-date">${date}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // Handle form submission
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const user = await checkAuth();
+            if (!user) return;
+
+            const updates = {
+                id: user.id,
+                full_name: document.getElementById('fullName').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                updated_at: new Date().toISOString()
+            };
+
+            const { error } = await supabase
+                .from('profiles')
+                .upsert(updates);
+
+            if (error) {
+                alert('Error updating profile: ' + error.message);
+            } else {
+                alert('Profile updated successfully!');
+                loadProfile();
+            }
+        });
+
+        // Reset form
+        function resetForm() {
+            loadProfile();
+        }
+
+        // Handle sign out
+        async function handleSignOut() {
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                console.error('Error signing out:', error.message);
+            } else {
+                window.location.href = 'signin.html';
+            }
+        }
+
+        // Load user bookings
+        async function loadBookings() {
+            try {
+                const user = await checkAuth();
+                if (!user) return;
+
+                const { data: bookings, error } = await supabase
+                    .from('bookings')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const bookingsList = document.getElementById('bookingsList');
+                
+                if (!bookings || bookings.length === 0) {
+                    bookingsList.innerHTML = `
+                        <div class="no-bookings">
+                            <i class="fas fa-box-open"></i>
+                            <p>You haven't made any bookings yet</p>
+                            <a href="book.html" class="btn-primary">
+                                <i class="fas fa-plus"></i>
+                                Book a Delivery
+                            </a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                bookingsList.innerHTML = bookings.map(booking => `
+                    <div class="booking-item">
+                        <div class="booking-header">
+                            <div>
+                                <span class="booking-id">Booking #${booking.id}</span>
+                                <div class="booking-date">
+                                    <i class="far fa-calendar"></i>
+                                    ${new Date(booking.created_at).toLocaleDateString('en-US', {
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric'
+                                    })}
+                                </div>
+                            </div>
+                            <span class="booking-status status-${booking.status.toLowerCase()}">${booking.status}</span>
+                        </div>
+                        <div class="booking-details">
+                            <div class="booking-detail">
+                                <span class="detail-label">From</span>
+                                <span class="detail-value">${booking.pickup_address}</span>
+                            </div>
+                            <div class="booking-detail">
+                                <span class="detail-label">To</span>
+                                <span class="detail-value">${booking.delivery_address}</span>
+                            </div>
+                            <div class="booking-detail">
+                                <span class="detail-label">Package Type</span>
+                                <span class="detail-value">${booking.package_type}</span>
+                            </div>
+                            <div class="booking-detail">
+                                <span class="detail-label">Weight</span>
+                                <span class="detail-value">${booking.weight} kg</span>
+                            </div>
+                        </div>
+                        <div class="booking-actions">
+                            <a href="track.html?id=${booking.tracking_id}" class="btn-track">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Track Package
+                            </a>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading bookings:', error);
+                alert('Failed to load bookings. Please try again.');
+            }
+        }
+
+        // Initialize profile page
+        async function initializePage() {
+            await loadProfile();
+            await loadBookings();
+
+            // Check for bookings hash in URL
+            if (window.location.hash === '#bookings') {
+                const bookingsSection = document.querySelector('.profile-section:last-child');
+                if (bookingsSection) {
+                    bookingsSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        }
+
+        // Run initialization
+        initializePage();
+
+        // Handle hash change
+        window.addEventListener('hashchange', function() {
+            if (window.location.hash === '#bookings') {
+                const bookingsSection = document.querySelector('.profile-section:last-child');
+                if (bookingsSection) {
+                    bookingsSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        });
+    </script>
+</body>
+</html> 

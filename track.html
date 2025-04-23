@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Package - CourierX</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="nav.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Add Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <style>
+        .tracking-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .tracking-form {
+            margin-bottom: 2rem;
+        }
+
+        .tracking-form input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .tracking-form button {
+            width: 100%;
+            padding: 1rem;
+            background: #4070f4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .tracking-form button:hover {
+            background: #2d5cf6;
+        }
+
+        .tracking-result {
+            display: none;
+            margin-top: 2rem;
+        }
+
+        .tracking-timeline {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 30px;
+            bottom: -30px;
+            width: 2px;
+            background: #4070f4;
+        }
+
+        .timeline-item:last-child::before {
+            display: none;
+        }
+
+        .timeline-dot {
+            width: 32px;
+            height: 32px;
+            background: #4070f4;
+            border-radius: 50%;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .timeline-content {
+            flex-grow: 1;
+        }
+
+        .timeline-date {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-status {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-location {
+            color: #444;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 1rem;
+            display: none;
+            text-align: center;
+            padding: 1rem;
+            background: #ffe6e6;
+            border-radius: 5px;
+        }
+
+        .booking-details {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #444;
+        }
+
+        .detail-value {
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .tracking-result {
+            margin-top: 20px;
+        }
+
+        .error-message {
+            background-color: #fff3f3;
+            border: 1px solid #ffcdd2;
+            color: #d32f2f;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .tracking-details {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .info-group {
+            margin-bottom: 20px;
+        }
+
+        .info-group h4 {
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .tracking-actions {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #4070f4;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background: #2d5cf6;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-box"></i>
+                    <span>CourierX</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="book.html">Book Delivery</a>
+                <a href="track.html" class="active">Track Package</a>
+                <a href="contact.html">Contact</a>
+                <div class="nav-buttons" id="authButtons">
+                    <!-- This will be populated by JavaScript -->
+                </div>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="tracking-container">
+        <h2>Track Your Package</h2>
+        <form id="trackingForm" class="tracking-form">
+            <input type="text" id="trackingId" placeholder="Enter your tracking ID" required>
+            <button type="submit">Track Package</button>
+        </form>
+        
+        <div id="errorMessage" class="error-message"></div>
+
+        <div id="trackingResult" class="tracking-result">
+            <!-- Results will be shown here -->
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-box"></i>
+                        <span>CourierX</span>
+                    </div>
+                    <p>Delivering your packages safely and on time, every time. Your trusted partner in logistics and delivery solutions.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="track.html">Track Package</a></li>
+                        <li><a href="book.html">Book Delivery</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Our Services</h3>
+                    <ul>
+                        <li><a href="services.html#express">Express Delivery</a></li>
+                        <li><a href="services.html#international">International Shipping</a></li>
+                        <li><a href="services.html#warehousing">Warehousing</a></li>
+                        <li><a href="services.html#customs">Customs Clearance</a></li>
+                        <li><a href="services.html#insurance">Insurance Services</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> 1234 Delivery Street, Courier City, CC 12345</li>
+                        <li><i class="fas fa-phone"></i> (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@courierx.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 CourierX. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Add navigation script -->
+    <script src="nav.js"></script>
+    <script>
+        async function trackPackage() {
+            try {
+                // Get tracking ID from input
+                const trackingId = document.getElementById('trackingId').value.trim();
+                if (!trackingId) {
+                    alert('Please enter a tracking ID');
+                    return;
+                }
+
+                // Show loading state
+                const resultDiv = document.getElementById('trackingResult');
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = '<p class="loading">Loading tracking information...</p>';
+
+                // Get booking details using tracking ID
+                const { data: booking, error: bookingError } = await supabase
+                    .from('bookings')
+                    .select('*')
+                    .eq('tracking_id', trackingId)
+                    .single();
+
+                if (bookingError) {
+                    console.error('Error fetching booking:', bookingError);
+                    throw new Error('Invalid tracking ID');
+                }
+
+                if (!booking) {
+                    throw new Error('No package found with this tracking ID');
+                }
+
+                // Get latest tracking status
+                const { data: tracking, error: trackingError } = await supabase
+                    .from('tracking')
+                    .select('*')
+                    .eq('booking_id', booking.id)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .single();
+
+                if (trackingError) {
+                    console.error('Error fetching tracking:', trackingError);
+                    throw new Error('Error fetching tracking information');
+                }
+
+                // Format the result HTML
+                const resultHTML = `
+                    <div class="tracking-details">
+                        <div class="tracking-header">
+                            <h3>Package Status</h3>
+                            <p class="status ${tracking.status.toLowerCase()}">${tracking.status}</p>
+                        </div>
+                        
+                        <div class="tracking-info">
+                            <div class="info-group">
+                                <h4>Current Location</h4>
+                                <p>${tracking.location}</p>
+                            </div>
+                            
+                            <div class="info-group">
+                                <h4>Sender</h4>
+                                <p>${booking.sender_name}</p>
+                                <p>${booking.sender_city}, ${booking.sender_state}</p>
+                            </div>
+                            
+                            <div class="info-group">
+                                <h4>Receiver</h4>
+                                <p>${booking.receiver_name}</p>
+                                <p>${booking.receiver_city}, ${booking.receiver_state}</p>
+                            </div>
+                            
+                            <div class="info-group">
+                                <h4>Package Details</h4>
+                                <p>Type: ${booking.package_type}</p>
+                                <p>Weight: ${booking.weight} kg</p>
+                                <p>Delivery Type: ${booking.delivery_type}</p>
+                            </div>
+                        </div>
+
+                        <div class="tracking-actions">
+                            <a href="confirmation.html?tracking_id=${trackingId}" class="btn btn-primary">
+                                View Full Details
+                            </a>
+                        </div>
+                    </div>
+                `;
+
+                // Update the result div
+                resultDiv.innerHTML = resultHTML;
+
+            } catch (error) {
+                console.error('Tracking error:', error);
+                const resultDiv = document.getElementById('trackingResult');
+                resultDiv.style.display = 'block';
+                resultDiv.innerHTML = `
+                    <div class="error-message" style="display: block;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>${error.message || 'An error occurred while tracking your package. Please try again.'}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Add event listener for form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('trackingForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    trackPackage();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

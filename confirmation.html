@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation - CourierX</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="nav.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .confirmation-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            color: #27ae60;
+            margin-bottom: 1rem;
+        }
+
+        .confirmation-header {
+            margin-bottom: 2rem;
+        }
+
+        .confirmation-header h1 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .confirmation-header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .tracking-info {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .tracking-id {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3498db;
+            margin: 1rem 0;
+            padding: 0.5rem;
+            background: #e8f4fc;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .booking-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .detail-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+
+        .detail-section h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .detail-item {
+            margin-bottom: 1rem;
+        }
+
+        .detail-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        .status-timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .status-timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+
+        .status-step {
+            position: relative;
+            z-index: 2;
+            background: white;
+            padding: 0 1rem;
+            text-align: center;
+        }
+
+        .status-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            color: white;
+        }
+
+        .status-step.active .status-icon {
+            background: #27ae60;
+        }
+
+        .status-step.completed .status-icon {
+            background: #3498db;
+        }
+
+        .status-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .status-step.active .status-label {
+            color: #27ae60;
+            font-weight: 500;
+        }
+
+        .status-step.completed .status-label {
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-box"></i>
+                    <span>CourierX</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="book.html">Book Delivery</a>
+                <a href="track.html">Track Package</a>
+                <a href="contact.html">Contact</a>
+                <div class="nav-buttons" id="authButtons">
+                    <!-- This will be populated by JavaScript -->
+                </div>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Confirmation Section -->
+    <section class="confirmation-section">
+        <div class="container">
+            <div class="confirmation-container">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                
+                <div class="confirmation-header">
+                    <h1>Booking Confirmed!</h1>
+                    <p>Your delivery has been successfully booked</p>
+                </div>
+                
+                <div class="tracking-info">
+                    <h2>Tracking ID</h2>
+                    <div class="tracking-id" id="trackingId">Loading...</div>
+                    <p>Use this ID to track your package</p>
+                </div>
+                
+                <div class="status-timeline">
+                    <div class="status-step completed">
+                        <div class="status-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="status-label">Booked</div>
+                    </div>
+                    <div class="status-step">
+                        <div class="status-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="status-label">Picked Up</div>
+                    </div>
+                    <div class="status-step">
+                        <div class="status-icon">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <div class="status-label">In Transit</div>
+                    </div>
+                    <div class="status-step">
+                        <div class="status-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="status-label">Delivered</div>
+                    </div>
+                </div>
+                
+                <div class="booking-details">
+                    <div class="detail-section">
+                        <h3>Sender Details</h3>
+                        <div class="detail-item">
+                            <div class="detail-label">Name</div>
+                            <div class="detail-value" id="senderName">Loading...</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Phone</div>
+                            <div class="detail-value" id="senderPhone">Loading...</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Address</div>
+                            <div class="detail-value" id="senderAddress">Loading...</div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3>Receiver Details</h3>
+                        <div class="detail-item">
+                            <div class="detail-label">Name</div>
+                            <div class="detail-value" id="receiverName">Loading...</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Phone</div>
+                            <div class="detail-value" id="receiverPhone">Loading...</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Address</div>
+                            <div class="detail-value" id="receiverAddress">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <a href="track.html" class="btn btn-secondary">
+                        <i class="fas fa-search"></i> Track Another Package
+                    </a>
+                    <a href="index.html" class="btn btn-primary">
+                        <i class="fas fa-home"></i> Go to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2024 CourierX. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Add Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="nav.js"></script>
+
+    <script>
+        // Get tracking ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const trackingId = urlParams.get('tracking_id');
+
+        // Load booking details
+        async function loadBookingDetails() {
+            try {
+                // Check authentication
+                const { data: { user }, error: authError } = await supabase.auth.getUser();
+                if (authError || !user) {
+                    window.location.href = 'signin.html?redirect=' + window.location.href;
+                    return;
+                }
+
+                // Get booking details using tracking ID
+                const { data: bookings, error: bookingError } = await supabase
+                    .from('bookings')
+                    .select('*')
+                    .eq('tracking_id', trackingId)
+                    .single();
+
+                if (bookingError || !bookings) {
+                    console.error('Error loading booking:', bookingError);
+                    alert('Error loading booking details. Please try again.');
+                    return;
+                }
+
+                // Update tracking ID display
+                document.getElementById('trackingId').textContent = trackingId;
+
+                // Update sender details
+                document.getElementById('senderName').textContent = bookings.sender_name;
+                document.getElementById('senderPhone').textContent = bookings.sender_phone;
+                document.getElementById('senderAddress').textContent = 
+                    `${bookings.sender_address}, ${bookings.sender_city}, ${bookings.sender_state} - ${bookings.sender_pincode}`;
+
+                // Update receiver details
+                document.getElementById('receiverName').textContent = bookings.receiver_name;
+                document.getElementById('receiverPhone').textContent = bookings.receiver_phone;
+                document.getElementById('receiverAddress').textContent = 
+                    `${bookings.receiver_address}, ${bookings.receiver_city}, ${bookings.receiver_state} - ${bookings.receiver_pincode}`;
+
+                // Get tracking status
+                const { data: tracking, error: trackingError } = await supabase
+                    .from('tracking')
+                    .select('*')
+                    .eq('booking_id', bookings.id)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .single();
+
+                if (!trackingError && tracking) {
+                    // Update status timeline
+                    updateStatusTimeline(tracking.status);
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error loading booking details. Please try again.');
+            }
+        }
+
+        // Update status timeline
+        function updateStatusTimeline(currentStatus) {
+            const statuses = ['Booked', 'Picked Up', 'In Transit', 'Delivered'];
+            const currentIndex = statuses.indexOf(currentStatus);
+
+            statuses.forEach((status, index) => {
+                const statusStep = document.querySelector(`.status-step:nth-child(${index + 1})`);
+                if (statusStep) {
+                    if (index <= currentIndex) {
+                        statusStep.classList.add('completed');
+                        if (index === currentIndex) {
+                            statusStep.classList.add('active');
+                        }
+                    } else {
+                        statusStep.classList.remove('completed', 'active');
+                    }
+                }
+            });
+        }
+
+        // Initialize page
+        if (trackingId) {
+            loadBookingDetails();
+        } else {
+            alert('No tracking ID provided');
+            window.location.href = 'track.html';
+        }
+    </script>
+</body>
+</html> 

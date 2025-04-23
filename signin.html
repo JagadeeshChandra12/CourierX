@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - CourierX</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="nav.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .auth-section {
+            min-height: calc(100vh - 80px - 400px);
+            background: linear-gradient(135deg, #f6f8fd 0%, #ffffff 100%);
+            padding: 60px 0;
+        }
+
+        .auth-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 40px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .auth-header .logo {
+            font-size: 28px;
+            color: #2563eb;
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+
+        .auth-header h2 {
+            font-size: 24px;
+            color: #1f2937;
+            margin: 16px 0 8px;
+        }
+
+        .auth-header p {
+            color: #6b7280;
+            font-size: 16px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: #2563eb;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4b5563;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .forgot-password {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .btn-signin {
+            width: 100%;
+            padding: 12px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-signin:hover {
+            background: #1d4ed8;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 24px;
+            color: #6b7280;
+        }
+
+        .auth-footer a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .social-signin {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+        }
+
+        .social-signin p {
+            color: #6b7280;
+            margin-bottom: 16px;
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .social-btn {
+            padding: 12px 24px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            color: #4b5563;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .social-btn:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+        }
+
+        .social-btn i {
+            font-size: 18px;
+        }
+
+        .google-btn i {
+            color: #ea4335;
+        }
+
+        .facebook-btn i {
+            color: #1877f2;
+        }
+
+        .error-message {
+            color: #dc2626;
+            background-color: #fee2e2;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: none;
+        }
+    </style>
+    <!-- Add Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <i class="fas fa-box"></i>
+                    <span>CourierX</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="book.html">Book Delivery</a>
+                <a href="track.html">Track Package</a>
+                <a href="contact.html">Contact</a>
+                <div class="nav-buttons" id="authButtons">
+                    <!-- This will be populated by JavaScript -->
+                </div>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <section class="auth-section">
+        <div class="auth-container">
+            <div class="auth-header">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-box"></i>
+                    CourierX
+                </a>
+                <h2>Welcome back</h2>
+                <p>Sign in to your account to continue</p>
+            </div>
+            
+            <div id="errorMessage" class="error-message"></div>
+            
+            <form id="signinForm" onsubmit="handleSignIn(event)">
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input type="email" id="email" name="email" required placeholder="Enter your email">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                </div>
+                
+                <div class="remember-forgot">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember" name="remember">
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn-signin">
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="social-signin">
+                <p>Or continue with</p>
+                <div class="social-buttons">
+                    <button class="social-btn google-btn" onclick="handleGoogleSignIn()">
+                        <i class="fab fa-google"></i>
+                        Google
+                    </button>
+                </div>
+            </div>
+
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="signup.html">Sign up</a></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-box"></i>
+                        <span>CourierX</span>
+                    </div>
+                    <p>Delivering your packages safely and on time, every time. Your trusted partner in logistics and delivery solutions.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="track.html">Track Package</a></li>
+                        <li><a href="book.html">Book Delivery</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Our Services</h3>
+                    <ul>
+                        <li><a href="services.html#express">Express Delivery</a></li>
+                        <li><a href="services.html#international">International Shipping</a></li>
+                        <li><a href="services.html#warehousing">Warehousing</a></li>
+                        <li><a href="services.html#customs">Customs Clearance</a></li>
+                        <li><a href="services.html#insurance">Insurance Services</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> 1234 Delivery Street, Courier City, CC 12345</li>
+                        <li><i class="fas fa-phone"></i> (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@courierx.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 CourierX. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Add navigation script -->
+    <script src="nav.js"></script>
+
+    <script>
+        async function handleSignIn(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            try {
+                console.log('Starting sign in process...');
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) {
+                    console.error('Sign in error:', error);
+                    errorMessage.style.display = 'block';
+                    errorMessage.textContent = error.message;
+                    return;
+                }
+
+                console.log('Sign in successful:', data);
+
+                // Get user profile
+                const { data: profile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', data.user.id)
+                    .single();
+
+                if (profileError) {
+                    console.error('Profile error:', profileError);
+                    throw profileError;
+                }
+
+                console.log('Profile loaded:', profile);
+
+                // Store user data
+                localStorage.setItem('user', JSON.stringify(data.user));
+                localStorage.setItem('userProfile', JSON.stringify(profile));
+
+                // Redirect based on admin status
+                if (profile.is_admin) {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                console.error('Error during sign in:', error);
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = error.message || 'An error occurred during sign in';
+            }
+        }
+
+        // Handle Enter key
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleSignIn();
+            }
+        });
+
+        // Social authentication handlers
+        async function handleGoogleSignIn() {
+            try {
+                const response = await window.supabaseFunctions.signInWithGoogle();
+                if (response && response.user) {
+                    localStorage.setItem('user', JSON.stringify(response.user));
+                    window.location.href = 'profile.html';
+                }
+            } catch (error) {
+                console.error('Google sign in error:', error);
+                alert('Google sign in failed: ' + error.message);
+            }
+        }
+
+        // Add event listener for Google button
+        document.querySelector('.google-btn').addEventListener('click', handleGoogleSignIn);
+    </script>
+</body>
+</html>
